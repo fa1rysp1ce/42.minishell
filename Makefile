@@ -1,0 +1,41 @@
+NAME = minishell
+
+
+LIB_DIR = ./libftplus/
+LIB = libftplus.a
+LIB_P = $(addprefix $(LIB_DIR), $(LIB))
+
+SRCS = main.c \
+		parse.c \
+
+OBJS = $(SRCS:.c=.o)
+
+
+CC = cc
+RM = rm -rf
+CFLAGS = -Wall -Werror -Wextra
+IFLAGS = -I. -I$(LIB_DIR)
+
+
+.PHONY: all clean fclean re
+
+all: $(NAME)
+
+$(LIB_P):
+	make -C $(LIB_DIR)
+	cp $(LIB_DIR)$(LIB) .
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(IFLAGS) -c -o $@ $<
+
+$(NAME): $(OBJS) $(LIB_P)
+	$(CC) $(OBJS) $(LIB_P) -L$(LIB_DIR) -lftplus -lreadline -lhistory -o $(NAME)
+
+clean:
+	make fclean -C $(LIB_DIR)
+	$(RM) $(OBJS) $(LIB)
+
+fclean: clean 
+	$(RM) $(NAME)
+
+re: fclean all	
