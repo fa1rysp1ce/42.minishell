@@ -14,7 +14,6 @@
 
 typedef struct s_token
 {
-	char	*value;
 	char	**args;
 	int		type;
 	void	*next;

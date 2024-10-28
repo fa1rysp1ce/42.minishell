@@ -5,7 +5,7 @@ void	parse(t_token **start, char **line)
 {
 	(void)start;
 	check_vars(line);
-	printf("%s\n", *line);
+	printf("%s(parse)\n", *line);
 }
 
 void	check_vars(char **line)
@@ -40,11 +40,9 @@ char *find_var(char *str)
 {
 	char *res;
 
-	(void)str;
-	res = malloc(3);
-	res[0] = 'a';
-	res[1] = 'a';
-	res[2] = 'a';
+	res = getenv(str);
+	//if (res == NULL)
+	//	res[0] = 0;
 	return (res);
 }
 
@@ -65,11 +63,15 @@ void	handle_vars(char **line, int i, int len)
 	k = 0;
 	while (k < len)
 	{
-		str[k] = line[0][i + k];
+		str[k] = line[0][i + k + 1];
 		k++;
 	}
 	str[k] = 0;
+	//printf("111\n");
+	printf("%s\n", str);
 	newstr = find_var(str);
+	printf("%s\n", newstr);
+	//printf("222\n");
 	free(str);
 	tmp = replace_var(line, i, len, newstr);
 	if (tmp == NULL)
@@ -108,6 +110,6 @@ char	*replace_var(char **line, int start, int len, char *substr)
 	while (line[0][j] != 0)
 		newline[i++] = line[0][j++];
 	newline[i] = 0;
-	free(substr);
+	//free(substr);
 	return (newline);
 }
