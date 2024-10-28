@@ -23,7 +23,10 @@ typedef struct s_token
 //parsing:
 
 //parse.c:
-int	parse(t_token **start, char *line);
+void	parse(t_token **start, char **line);
+void	check_vars(char **line);
+void	handle_vars(char **line, int i, int len);
+char	*replace_var(char **line, int start, int len, char *substr);
 
 
 //execution:

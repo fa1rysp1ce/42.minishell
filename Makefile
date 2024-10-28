@@ -15,6 +15,7 @@ CC = cc
 RM = rm -rf
 CFLAGS = -Wall -Werror -Wextra
 IFLAGS = -I. -I$(LIB_DIR)
+RLFLAGS = -L/usr/local/opt/readline/lib -I/usr/local/opt/readline/include -lreadline -lhistory
 
 
 .PHONY: all clean fclean re
@@ -29,7 +30,7 @@ $(LIB_P):
 	$(CC) $(CFLAGS) $(IFLAGS) -c -o $@ $<
 
 $(NAME): $(OBJS) $(LIB_P)
-	$(CC) $(OBJS) $(LIB_P) -L$(LIB_DIR) -lftplus -lreadline -lhistory -o $(NAME)
+	$(CC) $(OBJS) $(LIB_P) -L$(LIB_DIR) -lftplus $(RLFLAGS) -o $(NAME)
 
 clean:
 	make fclean -C $(LIB_DIR)

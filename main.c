@@ -8,8 +8,11 @@ int	main(void)
 	while (1)
 	{
 		line = readline(GREEN BOLD"minishell:"DEFAULT" ");
-		printf("%s\n", line);
-		parse(&ls_ptr, line);
+		//add_history(line);
+		//rl_replace_line((const char *)line, 0);
+		//printf("%s\n", line);
+		//rl_redisplay();
+		parse(&ls_ptr, &line);
 		free(line);
 	}
 	return (0);
