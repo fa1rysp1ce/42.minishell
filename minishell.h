@@ -27,6 +27,13 @@ void	check_vars(char **line);
 void	handle_vars(char **line, int i, int len);
 char	*replace_var(char **line, int start, int len, char *substr);
 
+//cmd_split.c
+char	**cmd_split(char const *s);
+
+//exit_funcs.c
+void	exit_split(char **arr, int last, char *s);
+
+
 
 //execution:
 

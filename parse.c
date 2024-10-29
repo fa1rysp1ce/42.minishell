@@ -3,8 +3,18 @@
 
 void	parse(t_token **start, char **line)
 {
+	char **strarr;
+
 	(void)start;
 	check_vars(line);
+	printf("111\n");
+	strarr = cmd_split(*line);
+	int i = 0;
+	while (strarr[i] != NULL)
+	{
+		printf("%s\n", strarr[i]);
+		i++;
+	}
 	printf("%s(parse)\n", *line);
 }
 
