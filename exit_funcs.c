@@ -1,11 +1,10 @@
 #include "minishell.h"
 
-void	exit_split(char **arr, int last, char *s)
+void	free_split(char **arr, int last, char *s)
 {
 	int	i;
 
 	i = 0;
-	rl_clear_history();
 	free(s);
 	while (i < last)
 	{
@@ -13,4 +12,10 @@ void	exit_split(char **arr, int last, char *s)
 		i++;
 	}
 	free(arr);
+}
+
+void free_input(char *s, char *statement)
+{
+	printf("Error\nWrong input: %s\n", statement);
+	free(s);
 }

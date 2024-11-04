@@ -8,7 +8,9 @@ LIB_P = $(addprefix $(LIB_DIR), $(LIB))
 SRCS = main.c \
 		parse.c \
 		cmd_split.c \
-		exit_funcs.c
+		exit_funcs.c \
+		variables.c \
+		check_input.c
 
 OBJS = $(SRCS:.c=.o)
 

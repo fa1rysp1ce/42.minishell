@@ -62,6 +62,8 @@ static int	ft_ccount(char const *s)
 	ccount = count_sym(s);
 	while (s[i] != '\0')
 	{
+		while (s[i] != '\0' && s[i + 1] != '"')
+			i++;
 		while (s[i] == ' ' || s[i] == '|' || s[i] == '<' || s[i] == '>'
 			|| s[i] == '=')
 			i++;
@@ -82,7 +84,7 @@ static int	handle_rds(char const *s, int start)
 	len = 0;
 	if (s[len + start] == s[len + start + 1])
 		len++;
-	else if (s[len + start + 1] == '<' || s[len + start + 1] == '>')
+	/*else if (s[len + start + 1] == '<' || s[len + start + 1] == '>')
 	{
 		printf("parse error with redirections\n");
 		return (-1);
@@ -91,7 +93,7 @@ static int	handle_rds(char const *s, int start)
 	{
 		printf("parse error with redirections\n");
 		return (-1);
-	}
+	}*/
 	return (len);
 }
 
@@ -110,7 +112,7 @@ static int	getslen(char const *s, int start)
 	{
 		if (s[len + start] == '"')
 		{
-			while (s[len + start] != '\0' && s[len + start] != '"')
+			while (s[len + start] != '\0' && s[len + start + 1] != '"')
 				len++;
 		}
 		if (s[len + start] == 39)
@@ -128,19 +130,25 @@ static char	*ft_createsubstr(char const *s, int start)
 {
 	int		len;
 	int		i;
+	int		j;
 	char	*str;
 
 	len = getslen(s, start);
 	i = 0;
+	j = 0;
 	if (len == 0)
 		return ("");
 	str = malloc(sizeof(char) * (len + 1));
 	if (!str)
 		return (NULL);
-	while (i < len)
+	while (j < len)
 	{
-		str[i] = s[i + start];
-		i++;
+		if (s[j + start] != '"' && s[j + start] != 39)
+		{
+			str[i] = s[j + start];
+			i++;
+		}
+		j++;
 	}
 	str[i] = '\0';
 	return (str);
@@ -157,7 +165,10 @@ char	**cmd_split(char const *s)
 	ccount = ft_ccount(s);
 	result = malloc(sizeof(char *) * (ccount + 1));
 	if (!result)
+	{
+		free((char *)s);
 		return (NULL);
+	}
 	i = 0;
 	j = 0;
 	while (i < ccount)
@@ -167,8 +178,11 @@ char	**cmd_split(char const *s)
 		start = j;
 		j += getslen(s, start);
 		result[i] = ft_createsubstr(s, start);
-		//if (result[i] == NULL)
-			//exit_split(result, i, s);
+		if (result[i] == NULL)
+		{
+			free_split(result, i, (char *)s);
+			return (NULL);
+		}
 		i++;
 	}
 	result[i] = NULL;
