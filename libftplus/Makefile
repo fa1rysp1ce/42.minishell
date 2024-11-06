@@ -18,14 +18,12 @@ SRC_DIR = srcs
 HDR_DIR = includes
 OBJ_DIR = objs
 LIBFT_DIR = libft
-PRINTF_DIR = printf
 GNL_DIR = get_next_line
 
 #source files and their paths
 
 SRC_FLS = $(LIBFT_FLS)\
-		  $(GNL_FLS)\
-		  $(PRINTF_FLS)
+		  $(GNL_FLS)
 
 LIBFT_FLS = $(addprefix $(SRC_DIR)/,\
 				$(LIBFT_DIR)/ft_atoi.c\
@@ -43,10 +41,6 @@ LIBFT_FLS = $(addprefix $(SRC_DIR)/,\
 				$(LIBFT_DIR)/ft_memcpy.c\
 				$(LIBFT_DIR)/ft_memmove.c\
 				$(LIBFT_DIR)/ft_memset.c\
-				$(LIBFT_DIR)/ft_putchar_fd.c\
-				$(LIBFT_DIR)/ft_putendl_fd.c\
-				$(LIBFT_DIR)/ft_putnbr_fd.c\
-				$(LIBFT_DIR)/ft_putstr_fd.c\
 				$(LIBFT_DIR)/ft_split.c\
 				$(LIBFT_DIR)/ft_strchr.c\
 				$(LIBFT_DIR)/ft_strdup.c\
@@ -63,14 +57,6 @@ LIBFT_FLS = $(addprefix $(SRC_DIR)/,\
 				$(LIBFT_DIR)/ft_substr.c\
 				$(LIBFT_DIR)/ft_tolower.c\
 				$(LIBFT_DIR)/ft_toupper.c)
-
-PRINTF_FLS = $(addprefix $(SRC_DIR)/,\
-			$(PRINTF_DIR)/ft_printf.c\
-			$(PRINTF_DIR)/ft_puthex.c\
-			$(PRINTF_DIR)/ft_putnbr.c\
-			$(PRINTF_DIR)/ft_putptr.c\
-			$(PRINTF_DIR)/ft_putstr.c\
-			$(PRINTF_DIR)/ft_putunbr.c)
 
 GNL_FLS = $(addprefix $(SRC_DIR)/,\
 			$(GNL_DIR)/get_next_line.c\
@@ -103,7 +89,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 $(OBJ_DIR): 
 	mkdir -p $(OBJ_DIR)
 	mkdir -p $(OBJ_DIR)/$(LIBFT_DIR)
-	mkdir -p $(OBJ_DIR)/$(PRINTF_DIR)
 	mkdir -p $(OBJ_DIR)/$(GNL_DIR)
 
 $(NAME): $(OBJS)

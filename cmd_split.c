@@ -37,19 +37,29 @@ static int	ft_ccount(char const *s)
 static int count_sym(char const *s)
 {
 	int	i;
+	int j;
 	int	count;
 
 	i = 0;
 	count = 0;
 	while (s[i])
 	{
-		if (s[i] == '|' || s[i] == '<' || s[i] == '>' || s[i] == '=')
+		if (s[i] == '=')
+		{
+			j = i - 1;
+			while (j >= 0 && s[j] != '|' && s[j] != '=')
+				j--;
+			if (s[j] != '=')
+				count++;
+		}
+		if (s[i] == '|' || s[i] == '<' || s[i] == '>')// || s[i] == '=')
 		{
 			if (i > 0 && s[i] != s[i - 1])
 				count++;
 		}
 		i++;
 	}
+	printf("%d sym\n", count);
 	return (count);
 }
 
@@ -62,15 +72,19 @@ static int	ft_ccount(char const *s)
 	ccount = count_sym(s);
 	while (s[i] != '\0')
 	{
-		while (s[i] != '\0' && s[i + 1] != '"')
-			i++;
-		while (s[i] == ' ' || s[i] == '|' || s[i] == '<' || s[i] == '>'
-			|| s[i] == '=')
+		if (s[i + 1] == '"')
+			while (s[i] != '\0' && s[i + 1] != '"')
+				i++;
+		if (s[i + 1] == 39)
+			while (s[i] != '\0' && s[i + 1] != 39)
+				i++;
+		while (s[i] == ' ' || s[i] == '|' || s[i] == '<' || s[i] == '>')
+			//|| s[i] == '=')
 			i++;
 		if (s[i] != '\0')
 			ccount++;
 		while (s[i] != ' ' && s[i] != '|' && s[i] != '<' && s[i] != '>'
-			&& s[i] != '=' && s[i] != '\0')
+			/*&& s[i] != '='*/ && s[i] != '\0')
 			i++;
 	}
 	printf("%d\n", ccount);
@@ -97,19 +111,17 @@ static int	handle_rds(char const *s, int start)
 	return (len);
 }
 
-static int	getslen(char const *s, int start)
+static int	getslen2(char const *s, int start, int len, int call)
 {
-	int	len;
-
-	len = 0;
-	if (s[len + start] == '<' || s[len + start] == '>')
-		return (1 + handle_rds(s, start));
-	else if (s[len + start] == '|' || s[len + start] == '=')
-		return (1);
 	while (s[len + start] != '\0' && s[len + start] != ' ' && s[len + start]
-		!= '<' && s[len + start] != '>' && s[len + start] != '|'
-		&& s[len + start] != '=')
+		!= '<' && s[len + start] != '>' && s[len + start] != '|')
+		//&& s[len + start] != '=')
 	{
+		if (s[len + start] == '=' && s[len + start + 1] != '\0' && s[len + 
+			start + 1] != ' ' && !is_op(s[len + start + 1]) && call == 1)
+		{
+			return (len);
+		}
 		if (s[len + start] == '"')
 		{
 			while (s[len + start] != '\0' && s[len + start + 1] != '"')
@@ -123,6 +135,33 @@ static int	getslen(char const *s, int start)
 		if (s[len + start] != 0)
 			len++;
 	}
+	return (len);
+}
+
+static int	getslen(char const *s, int start)
+{
+	int			len;
+	static int	call = 1;
+
+	len = 0;
+	if (s[len + start] == '<' || s[len + start] == '>')
+		return (1 + handle_rds(s, start));
+	else if (s[len + start] == '|')//|| s[len + start] == '=')
+	{
+		call = 1;
+		return (1);
+	}	
+	else if (s[len + start] == '=')
+	{
+		if (s[len + start + 1] != '\0' && s[len + 
+			start + 1] != ' ' && !is_op(s[len + start + 1]) && s[len + start - 1] != '\0' && s[len + 
+			start - 1] != ' ' && !is_op(s[len + start - 1]) && call != 1)
+		{
+			call = 2;
+			return (1);
+		}
+	}
+	len = getslen2(s, start, len, call);
 	return (len);
 }
 
@@ -154,20 +193,21 @@ static char	*ft_createsubstr(char const *s, int start)
 	return (str);
 }
 
-char	**cmd_split(char const *s)
+int	cmd_split(char const *s, char ***result)
 {
 	int		i;
 	int		j;
 	int		ccount;
 	int		start;
-	char	**result;
+	//char	**result;
 
 	ccount = ft_ccount(s);
-	result = malloc(sizeof(char *) * (ccount + 1));
+	//result = *strarr;
+	*result = malloc(sizeof(char *) * (ccount + 1));
 	if (!result)
 	{
 		free((char *)s);
-		return (NULL);
+		//return (NULL);
 	}
 	i = 0;
 	j = 0;
@@ -177,16 +217,17 @@ char	**cmd_split(char const *s)
 			j++;
 		start = j;
 		j += getslen(s, start);
-		result[i] = ft_createsubstr(s, start);
-		if (result[i] == NULL)
+		result[0][i] = ft_createsubstr(s, start);
+		if (result[0][i] == NULL)
 		{
-			free_split(result, i, (char *)s);
-			return (NULL);
+			free_split(*result, i, (char *)s);
+			//return (NULL);
 		}
 		i++;
 	}
-	result[i] = NULL;
-	return (result);
+	result[0][i] = NULL;
+	//return (result);
+	return (ccount);
 }
 
 /*

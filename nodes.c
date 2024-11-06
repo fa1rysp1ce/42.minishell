@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void	add_node(t_token **node, char **args, int type)
+void	*add_node(t_token **node)
 {
 	t_token	*new_node;
 	t_token *curr;
@@ -9,8 +9,11 @@ void	add_node(t_token **node, char **args, int type)
 	if (!new_node)
 		//exit handle
 	new_node->next = NULL;
-	new_node->args = args;
-	new_node->type = type;
+	new_node->args = NULL;
+	new_node->input = NULL;
+	new_node->is_append = 0;
+	new_node->output = NULL;
+	new_node->heredoc = 0;
 	if (*node == NULL)
 	{
 	//	new_node->prev = NULL;
