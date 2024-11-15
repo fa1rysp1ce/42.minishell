@@ -47,6 +47,14 @@ int	handle_commands(char **strarr, int pos, t_token **list)
 	token->type = CMD;
 	return (count);
 }
+/*
+char *	handle_heredoc(t_token **list)
+{
+	int	fd;
+
+	fd = 0;
+	fd = open("heredoc.txt", O_RDWR | O_CREAT | O_TRUNC, 0666);
+}*/
 
 int	handle_input(char *str, char **strarr, int pos, t_token **list)
 {
@@ -70,13 +78,18 @@ int	handle_output(char *str, char **strarr, int pos, t_token **list)
 	token = find_last(list);
 	if (token->output != NULL)
 		free(token->output);
-	fd = open(strarr[pos + 1], O_RDWR | O_CREAT | O_TRUNC, 0666);
-	close(fd);
 	token->output = strarr[pos + 1];
 	if (str[1] == '>')
+	{
 		token->is_append = 1;
+		fd = open(strarr[pos + 1], O_RDWR | O_CREAT, 0666);
+	}	
 	else
+	{
 		token->is_append = 0;
+		fd = open(strarr[pos + 1], O_RDWR | O_CREAT | O_TRUNC, 0666);
+	}
+	close(fd);
 	free(str);
 	return (2);
 }

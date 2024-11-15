@@ -43,16 +43,6 @@ int	ft_ccount(char const *s)
 	//printf("%d\n", ccount);
 	return (ccount);
 }
-/*
-static int	handle_rds(char const *s, int start)
-{
-	int	len;
-
-	len = 0;
-	if (s[len + start] == s[len + start + 1])
-		len++;
-	return (len);
-}*/
 
 static int	getslen(char const *s, int start)
 {

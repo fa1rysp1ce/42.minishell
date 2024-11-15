@@ -14,16 +14,16 @@
 # define DEFAULT "\033[0m"
 
 # define PIPE 1
-# define CMD 2
+# define CMD 0
 
 typedef struct s_token
 {
 	char	**args;
 	int		type;
-	char	*input;      // Name of input file for <
-    char 	*output;     // Name of output file for > or >>
-    int		heredoc;       // Flag for << (1) or not (0)
-    int 	is_append;         // Flag for >> (1) vs > (0)
+	char	*input;      // Name of input file for < // array
+    char 	*output;     // Name of output file for > or >>  //array
+    int		heredoc;       // Flag for << (1) or not (0) char //char * array
+    int 	is_append;        // Flag for >> (1) vs > (0)
 	void	*next;
 } t_token;
 
