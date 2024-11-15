@@ -53,6 +53,35 @@ static int	count_c(char *s, char c)
 	return (count);
 }
 
+static int	check_ends(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] == ' ')
+		i++;
+	if (s[i] == '|')
+	{
+		free_input(s, "cannot start with pipe");
+		return (1);
+	}
+	if (s[i] == 0)
+	{
+		free(s);
+		return (2);
+	}
+	while (s[i + 1] != 0)
+		i++;
+	while (s[i] == ' ')
+		i--;
+	if (s[i] == '|' || s[i] == '<' || s[i] == '>')
+	{
+		free_input(s, "cannot end with special symbol");
+		return (3);
+	}
+	return (0);
+}
+
 int	check_input(char *s)
 {
 	if (count_c(s, '"') % 2 != 0 || count_c(s, 39) % 2 != 0)
@@ -60,7 +89,7 @@ int	check_input(char *s)
 		free_input(s, "unclosed quotes");
 		return (1);
 	}
-	if (check_ops(s) != 0)
+	if (check_ops(s) != 0 || check_ends(s) != 0)
 		return (2);
 	return (0);
 }

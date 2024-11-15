@@ -59,11 +59,9 @@ void	handle_vars(char **line, int i, int len)
 		k++;
 	}
 	str[k] = 0;
-	//printf("111\n");
 	printf("%s\n", str);
 	newstr = find_var(str);
 	printf("%s\n", newstr);
-	//printf("222\n");
 	free(str);
 	tmp = replace_var(line, i, len, newstr);
 	if (tmp == NULL)

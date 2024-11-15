@@ -10,7 +10,9 @@ SRCS = main.c \
 		cmd_split.c \
 		exit_funcs.c \
 		variables.c \
-		check_input.c
+		check_input.c \
+		fill_list.c \
+		nodes.c
 
 OBJS = $(SRCS:.c=.o)
 

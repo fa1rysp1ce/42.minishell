@@ -4,6 +4,7 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <fcntl.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "libftplus/includes/libft.h"
@@ -21,8 +22,8 @@ typedef struct s_token
 	int		type;
 	char	*input;      // Name of input file for <
     char 	*output;     // Name of output file for > or >>
-    int 	is_append;         // Flag for >> (1) vs > (0)
     int		heredoc;       // Flag for << (1) or not (0)
+    int 	is_append;         // Flag for >> (1) vs > (0)
 	void	*next;
 } t_token;
 
@@ -30,10 +31,12 @@ typedef struct s_token
 
 //parse.c:
 int		parse(t_token **start, char **line);
-int		check_input(char *s);
+int		cmd_split(char const *s, char ***strarr);
+int		fill_list(char **strarr, t_token **list);
 
 //chck_input.c
-int	is_op(char c);
+int		check_input(char *s);
+int		is_op(char c);
 
 //variables.c
 void	check_vars(char **line);
@@ -41,11 +44,26 @@ void	handle_vars(char **line, int i, int len);
 char	*replace_var(char **line, int start, int len, char *substr);
 
 //cmd_split.c
-int		cmd_split(char const *s, char ***result);
+int		fill_arr(char const *s, char ***strarr, int ccount);
+int		ft_ccount(char const *s);
+
+//fill_list.c
+int		eval_str(char **strarr, t_token **list);
+int		handle_commands(char **strarr, int pos, t_token **list);
+int		handle_input(char *str, char **strarr, int pos, t_token **list);
+int		handle_output(char *str, char **strarr, int pos, t_token **list);
+int		pipe_token(char **strarr, int pos, t_token **list);
+
+//nodes.c
+void	*add_node(t_token **node);
+t_token	*find_last(t_token **list);
+void	print_list(t_token **list);
+void	free_list(t_token **list);
 
 //exit_funcs.c
 void	free_split(char **arr, int last, char *s);
 void	free_input(char *s,  char *statement);
+void	exit_fill_list(char **strarr, int pos, t_token **list);
 
 
 //execution:

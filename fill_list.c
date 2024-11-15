@@ -1,68 +1,102 @@
 #include "minishell.h"
 
-int	fill_list(char **strarr, t_token **list, int arrsize)
+int	eval_str(char **strarr, t_token **list)
 {
 	int	i;
-	t_token	*token;
 
 	i = 0;
-	while (i < arrsize)
+	while (strarr[i] != NULL)
 	{
-		token = add_node(list);
-		eval_str(strarr[i], strarr, i, token);
+		//printf("iteration index: %d\n", i);
+		if (strarr[i][0] == '|')
+			i += pipe_token(strarr, i, list);
+		else if (strarr[i][0] == '<' || strarr[i][0] == '>')
+		{
+			if (strarr[i][0] == '<')
+				i += handle_input(strarr[i], strarr, i, list);
+			else if (strarr[i][0] == '>')
+				i += handle_output(strarr[i], strarr, i, list);
+		}
+		else
+			i += handle_commands(strarr, i, list);
+	}
+	return (i);
+}
+
+int	handle_commands(char **strarr, int pos, t_token **list)
+{
+	t_token	*token;
+	int		i;
+	int		count;
+
+	count = 0;
+	i = 0;
+	token = find_last(list);
+	while (strarr[count + pos] != NULL && strarr[count + pos][0] != '|' 
+		&& strarr[count + pos][0] != '<' && strarr[count + pos][0] != '>')
+		count++;
+	token->args = malloc(sizeof(char *) * (count + 1));
+	if (!token->args)
+		exit_fill_list(strarr, pos, list);
+	while (i < count)
+	{
+		token->args[i] = strarr[pos + i];
 		i++;
 	}
+	token->args[i] = NULL;
+	token->type = CMD;
+	return (count);
 }
 
-int	eval_str(char *str, char **strarr, int pos, t_token *token)
+int	handle_input(char *str, char **strarr, int pos, t_token **list)
 {
-	if (is_op(str[0]))
-	{
-		handle_ops(str, strarr, pos, token);
-	}
-}
+	t_token *token;
 
-int	handle_ops(char *str, char **strarr, int pos, t_token *token)
-{
-	if (str[0] == '|')
-		pipe_token(str, strarr, pos, token);
-	else if (str[0] == '<')
-		handle_input(str, strarr, pos, token);
-	else if (str[0] == '>')
-		handle_output(str, strarr, pos, token);
-}
-
-static void	handle_input(char *str, char **strarr, int pos, t_token *token)
-{
+	token = find_last(list);
 	token->input = strarr[pos + 1];
 	if (str[1] == '<')
 		token->heredoc = 1;
 	else
 		token->heredoc = 0;
 	free(str);
-	strarr[pos] = NULL;
-	strarr[pos + 1] = NULL;
+	return (2);
 }
 
-static void	handle_output(char *str, char **strarr, int pos, t_token *token)
+int	handle_output(char *str, char **strarr, int pos, t_token **list)
 {
+	t_token *token;
+	int		fd;
+
+	token = find_last(list);
+	if (token->output != NULL)
+		free(token->output);
+	fd = open(strarr[pos + 1], O_RDWR | O_CREAT | O_TRUNC, 0666);
+	close(fd);
 	token->output = strarr[pos + 1];
 	if (str[1] == '>')
 		token->is_append = 1;
 	else
 		token->is_append = 0;
 	free(str);
-	strarr[pos] = NULL;
-	strarr[pos + 1] = NULL;
+	return (2);
 }
 
-void	pipe_token(char *str, char **strarr, int pos, t_token *token)
+int	pipe_token(char **strarr, int pos, t_token **list)
 {
-	token->args = malloc(sizeof(void *) * 2);
-	if (!token->args)
-		//exit handle
-	token->args[0] = str;
-	token->args[1] = NULL;
+	t_token *token;
+
+	token = add_node(list);
+	//printf("pipe 1\n");
+	//token->args = malloc(sizeof(void *) * 2);
+	//if (!token->args)
+	//	exit(1);
+		//return (1); exit from here actually
+	//printf("pipe 2\n");
+	//token->args[0] = str;
+	//token->args[1] = NULL;
+	//printf("pipe 3\n");
+	free(strarr[pos]);
 	token->type = PIPE;
-	strarr[pos] = NULL;
+	add_node(list);
+	return (1);
 }
