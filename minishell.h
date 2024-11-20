@@ -13,17 +13,21 @@
 # define BOLD "\033[1m"
 # define DEFAULT "\033[0m"
 
-# define PIPE 1
 # define CMD 0
+# define PIPE 1
+# define IN 2
+# define HDOC 3
+# define OUT 4
+# define OUT_APP 5
 
 typedef struct s_token
 {
 	char	**args;
 	int		type;
-	char	*input;      // Name of input file for < // array
-    char 	*output;     // Name of output file for > or >>  //array
-    int		heredoc;       // Flag for << (1) or not (0) char //char * array
-    int 	is_append;        // Flag for >> (1) vs > (0)
+	//char	*input;      // Name of input file for < // array
+   // char 	*output;     // Name of output file for > or >>  //array
+   // int		heredoc;       // Flag for << (1) or not (0) char //char * array
+   // int 	is_append;        // Flag for >> (1) vs > (0)
 	void	*next;
 } t_token;
 
@@ -50,7 +54,7 @@ int		ft_ccount(char const *s);
 //fill_list.c
 int		eval_str(char **strarr, t_token **list);
 int		handle_commands(char **strarr, int pos, t_token **list);
-int		handle_input(char *str, char **strarr, int pos, t_token **list);
+int		handle_redirec(char *str, char **strarr, int pos, t_token **list);
 int		handle_output(char *str, char **strarr, int pos, t_token **list);
 int		pipe_token(char **strarr, int pos, t_token **list);
 

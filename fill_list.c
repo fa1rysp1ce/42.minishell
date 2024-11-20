@@ -10,37 +10,53 @@ int	eval_str(char **strarr, t_token **list)
 		//printf("iteration index: %d\n", i);
 		if (strarr[i][0] == '|')
 			i += pipe_token(strarr, i, list);
-		else if (strarr[i][0] == '<' || strarr[i][0] == '>')
+		/*else if (strarr[i][0] == '<' || strarr[i][0] == '>')
 		{
 			if (strarr[i][0] == '<')
 				i += handle_input(strarr[i], strarr, i, list);
 			else if (strarr[i][0] == '>')
 				i += handle_output(strarr[i], strarr, i, list);
-		}
+		}*/
 		else
 			i += handle_commands(strarr, i, list);
 	}
 	return (i);
 }
 
+int	arg_count(char **strarr, int pos)
+{
+	int	count;
+
+	count = 0;
+	while (strarr[count + pos] != NULL && strarr[count + pos][0] != '|')
+	{
+		count++;
+	}
+	return (count);
+}
+
 int	handle_commands(char **strarr, int pos, t_token **list)
 {
 	t_token	*token;
 	int		i;
+	int		j;
 	int		count;
 
-	count = 0;
 	i = 0;
+	j = 0;
 	token = find_last(list);
-	while (strarr[count + pos] != NULL && strarr[count + pos][0] != '|' 
-		&& strarr[count + pos][0] != '<' && strarr[count + pos][0] != '>')
-		count++;
+	count = arg_count(strarr, pos);
 	token->args = malloc(sizeof(char *) * (count + 1));
 	if (!token->args)
 		exit_fill_list(strarr, pos, list);
 	while (i < count)
 	{
-		token->args[i] = strarr[pos + i];
+		if (strarr[pos + i][0] == '<' || strarr[pos + i][0] == '>')
+		{
+			i += handle_redirec(strarr[pos + i], strarr, pos + i, list);
+		}
+		else
+			token->args[j++] = strarr[pos + i];
 		i++;
 	}
 	token->args[i] = NULL;
@@ -56,20 +72,28 @@ char *	handle_heredoc(t_token **list)
 	fd = open("heredoc.txt", O_RDWR | O_CREAT | O_TRUNC, 0666);
 }*/
 
-int	handle_input(char *str, char **strarr, int pos, t_token **list)
+int	handle_redirec(char *str, char **strarr, int pos, t_token **list)
 {
 	t_token *token;
 
-	token = find_last(list);
-	token->input = strarr[pos + 1];
-	if (str[1] == '<')
-		token->heredoc = 1;
-	else
-		token->heredoc = 0;
+	token = add_node(list);
+	token->args = malloc(sizeof(char *) * 2);
+	if (!token->args)
+		exit_fill_list(strarr, pos, list);
+	token->args[0] = strarr[pos + 1];
+	token->args[1] = NULL;
+	if (str[0] == '<' && str[1] != '<')
+		token->type = IN;
+	else if (str[0] == '<' && str[1] == '<')
+		token->type = HDOC;
+	else if (str[0] == '>' && str[1] != '>')
+		token->type = OUT;
+	else if (str[0] == '>' && str[1] == '>')
+		token->type = OUT_APP;
 	free(str);
-	return (2);
+	return (1);
 }
-
+/*
 int	handle_output(char *str, char **strarr, int pos, t_token **list)
 {
 	t_token *token;
@@ -92,22 +116,13 @@ int	handle_output(char *str, char **strarr, int pos, t_token **list)
 	close(fd);
 	free(str);
 	return (2);
-}
+}*/
 
 int	pipe_token(char **strarr, int pos, t_token **list)
 {
 	t_token *token;
 
 	token = add_node(list);
-	//printf("pipe 1\n");
-	//token->args = malloc(sizeof(void *) * 2);
-	//if (!token->args)
-	//	exit(1);
-		//return (1); exit from here actually
-	//printf("pipe 2\n");
-	//token->args[0] = str;
-	//token->args[1] = NULL;
-	//printf("pipe 3\n");
 	free(strarr[pos]);
 	token->type = PIPE;
 	add_node(list);

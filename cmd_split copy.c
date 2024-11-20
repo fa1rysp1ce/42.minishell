@@ -1,4 +1,42 @@
 #include "minishell.h"
+// qoute version of ccount
+int	ft_ccount(char const *s)
+{
+	int		i;
+	int		ccount;
+
+	i = 0;
+	ccount = count_sym(s);
+	//printf("%d, %c counted\n", ccount, s[i]);
+	while (s[i] != '\0')
+	{
+		printf("%d, %c\n", i, s[i]);
+		while (s[i] == ' ' || s[i] == '|' || s[i] == '<' || s[i] == '>')
+			i++;
+		if (s[i] != '\0')
+		{
+			ccount++;
+			printf("%d, %c counted\n", ccount, s[i]);
+		}
+		if (s[i] == '"')
+		{
+			i++;
+			while (s[i] != '\0' && s[i] != '"')
+				i++;
+			if (s[i] == '"')
+				i++;
+		}
+		//printf("dann: %d, %c\n", i, s[i]);
+		if (s[i + 1] == 39)
+			while (s[i] != '\0' && s[i + 1] != 39)
+				i++;
+		while (s[i] != ' ' && s[i] != '|' && s[i] != '<' && s[i] != '>'
+			&& s[i] != '\0')
+			i++;
+	}
+	printf("%d is count\n", ccount);
+	return (ccount);
+}
 /*
 static int	ft_ccount(char const *s)
 {

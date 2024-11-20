@@ -20,29 +20,121 @@ static int count_sym(char const *s)
 	return (count);
 }
 
+static int	quotes(char const *s, int *i, char c)
+{
+	int	re;
+
+	re = 0;
+	if (*i != 0 && (s[*i - 1]  != ' ' && s[*i - 1] != '|' && s[*i - 1] != '<' && s[*i - 1] != '>'))
+		re = 1;
+	*i += 1;
+	while (s[*i] != '\0' )//&& s[*i] != c)
+	{
+		if (s[*i] == c && s[*i + 1] != c)
+			break; //fix count for consec ""
+		*i += 1;
+	}
+	if (s[*i] == c)
+		*i += 1;
+	if (s[*i] != 0 && (s[*i + 1]  != ' ' && s[*i + 1] != '|' && s[*i + 1] != '<' && s[*i + 1] != '>'))
+		re = 0;
+	printf("%d re flag\n", re);
+	return (re);
+}
+
 int	ft_ccount(char const *s)
 {
 	int		i;
 	int		ccount;
+	int		quote_flag;
 
 	i = 0;
+	quote_flag = 0;
 	ccount = count_sym(s);
+	//printf("%d, %c counted\n", ccount, s[i]);
 	while (s[i] != '\0')
 	{
-		if (s[i + 1] == '"')
-			while (s[i] != '\0' && s[i + 1] != '"')
-				i++;
+		printf("%d, %c\n", i, s[i]);
 		while (s[i] == ' ' || s[i] == '|' || s[i] == '<' || s[i] == '>')
 			i++;
-		if (s[i] != '\0')
+		
+		printf("%d quote flag bei %c\n", quote_flag, s[i]);
+		if (s[i] != '\0' && quote_flag == 0)
+		{
 			ccount++;
+			printf("%d, %c counted\n", ccount, s[i]);
+		}
+		quote_flag = 0;
+		//printf("dann: %d, %c\n", i, s[i]);
+		/*if (s[i + 1] == 39)
+			while (s[i] != '\0' && s[i + 1] != 39)
+				i++;*/
 		while (s[i] != ' ' && s[i] != '|' && s[i] != '<' && s[i] != '>'
 			&& s[i] != '\0')
+		{
+			if (s[i] == '"')
+			{
+				/*i++;
+				while (s[i] != '\0' && s[i] != '"')
+					i++;
+				if (s[i] == '"')
+					i++;*/
+				quote_flag = quotes(s, &i, s[i]);
+				//continue;
+				i++;
+			}
 			i++;
+		}
 	}
-	//printf("%d\n", ccount);
+	printf("%d is count\n", ccount);
 	return (ccount);
 }
+
+/*
+int	ft_ccount(char const *s)
+{
+	int		i;
+	int		ccount;
+	int		d_quotes;
+
+	i = 0;
+	d_quotes = 0;
+	ccount = count_sym(s);
+	//printf("%d, %c counted\n", ccount, s[i]);
+	while (s[i] != '\0')
+	{
+		printf("%d, %c\n", i, s[i]);
+		printf("d_quotes vorher: %d\n", d_quotes);
+		if (s[i] == '"')
+		{
+			d_quotes = !d_quotes;
+			printf("d_quotes: %d\n", d_quotes);
+			i++;
+			//continue ;
+			// hier * while (s[i] != '\0' && s[i] != '"')
+				i++;
+			if (s[i] == '"')
+				i++; //hier *
+		}
+		while (!d_quotes && (s[i] == ' ' || s[i] == '|' || s[i] == '<' || s[i] == '>' ))
+			i++;
+		if (s[i] != '\0' && !d_quotes)
+		{
+			ccount++;
+			printf("%d, %c counted\n", ccount, s[i]);
+		}
+		//printf("dann: %d, %c\n", i, s[i]);
+		// hier *  if (s[i + 1] == 39)
+			while (s[i] != '\0' && s[i + 1] != 39)
+				i++; // hier *
+		while ((s[i] != ' ' && s[i] != '|' && s[i] != '<' && s[i] != '>'
+			&& s[i] != '\0') || (d_quotes && (s[i] != '"' && s[i] != 39)))
+			i++;
+	}
+	printf("%d is count\n", ccount);
+	return (ccount);
+}*/
+
 
 static int	getslen(char const *s, int start)
 {
@@ -62,15 +154,17 @@ static int	getslen(char const *s, int start)
 		{
 			while (s[len + start] != '\0' && s[len + start + 1] != '"')
 				len++;
+			len += 1; //THIS from chatgpt
 		}
 		if (s[len + start] == 39)
 		{
-			while (s[len + start] != '\0' && s[len + start] != 39)
+			while (s[len + start] != '\0' && s[len + start + 1] != 39)
 				len++;
 		}
 		if (s[len + start] != 0)
 			len++;
 	}
+	printf("%d in len\n", len);
 	return (len);
 }
 
